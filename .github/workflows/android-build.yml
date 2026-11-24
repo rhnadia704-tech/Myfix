@@ -16,11 +16,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: '21'
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
@@ -38,10 +38,10 @@ jobs:
           gradle-version: '9.3.1'
 
       - name: Run unit tests
-        run: gradle testDebugUnitTest --no-daemon
+        run: gradle testDebugUnitTest -PMYFIX_NATIVE_BUILD=true --no-daemon --stacktrace
 
       - name: Build MYFix Debug APK with native libfodfix (arm64-v8a)
-        run: gradle assembleDebug -PMYFIX_NATIVE_BUILD=true --no-daemon
+        run: gradle assembleDebug -PMYFIX_NATIVE_BUILD=true --no-daemon --stacktrace
 
       - name: Package standalone libfodfix GSI bundle
         run: |
