@@ -1,0 +1,19 @@
+# MYFix / libfodfix SELinux Type Enforcement (AOSP / GSI reference policy)
+# Compatible Android 13 - 15 (arm64-v8a)
+# Note: libfodfix.so uses system_lib_file context in /system/lib64/ for safe loading
+# without risking bootloops on enforcing GSI builds.
+
+type fodfix_bridge, domain;
+type fodfix_exec, system_file_type, exec_type, file_type;
+
+# Allow system_server and fingerprint HAL domains to read/map libfodfix.so
+allow system_server system_lib_file:file { read getattr open map execute };
+allow hal_fingerprint_default system_lib_file:file { read getattr open map execute };
+
+# Allow vendor/system FOD bridge property inspection
+allow system_app default_prop:file { read getattr open map };
+allow hal_fingerprint_default fodfix_exec:file { read getattr open map execute };
+
+# Allow binder IPC between system fingerprint service and vendor fingerprint HAL
+binder_call(system_server, hal_fingerprint_default)
+binder_call(hal_fingerprint_default, system_server)

@@ -1,0 +1,75 @@
+name: Build MYFix APK & libfodfix (arm64-v8a)
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build APK & Native libfodfix
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android NDK and CMake
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.0.0" "ndk;27.2.12479018" "cmake;3.22.1"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.3.1'
+
+      - name: Run unit tests
+        run: gradle testDebugUnitTest --no-daemon
+
+      - name: Build MYFix Debug APK with native libfodfix (arm64-v8a)
+        run: gradle assembleDebug -PMYFIX_NATIVE_BUILD=true --no-daemon
+
+      - name: Package standalone libfodfix GSI bundle
+        run: |
+          mkdir -p dist/libfodfix-arm64-bundle/lib64
+          mkdir -p dist/libfodfix-arm64-bundle/selinux
+          mkdir -p dist/libfodfix-arm64-bundle/init
+
+          SO_PATH=$(find app/build/intermediates/merged_native_libs/debug -name "libfodfix.so" | grep "arm64-v8a" | head -n 1)
+          if [ -z "$SO_PATH" ]; then
+            echo "ERROR: libfodfix.so (arm64-v8a) was not generated!"
+            exit 1
+          fi
+
+          cp -v "$SO_PATH" dist/libfodfix-arm64-bundle/lib64/libfodfix.so
+          cp -rv app/src/main/assets/myfix/selinux/* dist/libfodfix-arm64-bundle/selinux/
+          cp -rv app/src/main/assets/myfix/init/* dist/libfodfix-arm64-bundle/init/
+          cp -v app/src/main/assets/myfix/install_gsi.sh dist/libfodfix-arm64-bundle/
+          cp -v app/src/main/assets/myfix/uninstall_gsi.sh dist/libfodfix-arm64-bundle/
+          file dist/libfodfix-arm64-bundle/lib64/libfodfix.so
+
+      - name: Upload MYFix APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MYFix-debug-apk
+          path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+
+      - name: Upload libfodfix arm64 GSI bundle artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: libfodfix-arm64-gsi-bundle
+          path: dist/libfodfix-arm64-bundle/
+          if-no-files-found: error

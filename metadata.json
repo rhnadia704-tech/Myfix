@@ -1,0 +1,6 @@
+{
+  "name": "MYFix",
+  "description": "Application de diagnostic FOD/HAL et binaire natif libfodfix pour GSI Android (arm64-v8a), sans Magisk.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

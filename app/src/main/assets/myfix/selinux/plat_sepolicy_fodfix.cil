@@ -1,0 +1,6 @@
+; MYFix CIL SELinux policy fragment (GSI Android 13 - 15)
+; Safe non-breaking permissions for /system/lib64/libfodfix.so
+
+(allow system_server system_lib_file (file (read getattr open map execute)))
+(allow system_app system_lib_file (file (read getattr open map execute)))
+(allow hal_fingerprint system_lib_file (file (read getattr open map execute)))

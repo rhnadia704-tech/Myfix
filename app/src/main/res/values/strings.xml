@@ -1,0 +1,55 @@
+<resources>
+    <string name="app_name">MYFix</string>
+    <string name="app_subtitle">arm64-v8a · FOD HAL Bridge</string>
+
+    <string name="btn_diagnostic">Diagnostic</string>
+    <string name="btn_diagnostic_no_deploy">Diagnostic without deploy</string>
+    <string name="btn_deploy">Deploy</string>
+    <string name="btn_export_sdcard">Export in sdcard</string>
+    <string name="btn_import">Importer</string>
+    <string name="btn_test_fingerprint_live">Tester empreinte (Live)</string>
+    <string name="btn_open_fp_settings">Paramètres empreinte</string>
+    <string name="btn_stop_live">Arrêter live</string>
+
+    <string name="status_abi_label">ABI</string>
+    <string name="status_root_label">Root</string>
+    <string name="status_system_label">System lib64</string>
+    <string name="status_selinux_label">SELinux</string>
+    <string name="source_bundled">Intégré</string>
+    <string name="source_imported">Importé</string>
+
+    <string name="status_ok">OK</string>
+    <string name="status_ready">Présent</string>
+    <string name="status_missing">Absent</string>
+    <string name="status_denied">Inactif</string>
+    <string name="status_checking">…</string>
+
+    <string name="console_title">Sortie libfodfix</string>
+    <string name="console_live_badge">LIVE</string>
+    <string name="console_empty">Lancez Diagnostic ou Diagnostic without deploy pour afficher la sortie de libfodfix.</string>
+    <string name="cd_refresh_status">Actualiser l\'état système</string>
+    <string name="cd_settings">Paramètres et mode d\'emploi</string>
+    <string name="cd_back">Retour</string>
+    <string name="cd_copy_logs">Copier les logs</string>
+    <string name="cd_clear_logs">Effacer les logs</string>
+    <string name="msg_logs_copied">Sortie libfodfix copiée</string>
+    <string name="msg_storage_permission_title">Accès stockage requis</string>
+    <string name="msg_storage_permission_body">Autorisez l\'accès aux fichiers pour enregistrer le package dans /sdcard/MYFix.</string>
+    <string name="btn_open_settings">Autoriser</string>
+    <string name="btn_cancel">Annuler</string>
+
+    <string name="settings_title">Paramètres &amp; Mode d\'emploi</string>
+    <string name="settings_binary_section">Binaire actif</string>
+    <string name="settings_binary_reset">Revenir au binaire intégré</string>
+    <string name="settings_binary_bundled_desc">Utilise libfodfix.so intégré dans l\'APK.</string>
+    <string name="settings_guide_section">Mode d\'emploi</string>
+
+    <string name="guide_step1_title">1. Importer ou utiliser le binaire intégré</string>
+    <string name="guide_step1_body">Appuyez sur Importer pour sélectionner un fichier libfodfix.so (arm64-v8a) depuis votre gestionnaire de fichiers. Le binaire importé devient prioritaire pour les tests, le déploiement et l\'export.</string>
+    <string name="guide_step2_title">2. Tester sans modifier le système</string>
+    <string name="guide_step2_body">Appuyez sur Diagnostic without deploy pour vérifier l\'initialisation de libfodfix et démarrer l\'écoute en direct. Utilisez ensuite Tester empreinte (Live) ou Paramètres empreinte pour poser le doigt et observer les échanges HAL/FOD en temps réel.</string>
+    <string name="guide_step3_title">3. Lire les résultats libfodfix</string>
+    <string name="guide_step3_body">[CORE] valide le chargement du pont. [HAL] indique les modules et démons biométriques du vendor. [FOD] trace en direct les états HBM, capteur tactile et transitions pendant l\'interaction.</string>
+    <string name="guide_step4_title">4. Déployer ou exporter pour le GSI</string>
+    <string name="guide_step4_body">Appuyez sur Deploy (root requis) pour installer libfodfix.so dans /system/lib64/ avec les fichiers init et SELinux anti-bootloop, puis lancez Diagnostic. Si /system est en lecture seule, utilisez Export in sdcard (/sdcard/MYFix).</string>
+</resources>

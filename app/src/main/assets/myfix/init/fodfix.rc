@@ -1,0 +1,10 @@
+# MYFix native init integration (anti-bootloop safe)
+# Never blocks boot_completed or class main; marks bridge readiness after boot.
+
+on post-fs-data
+    # Ensure safe permissions on deployed library without blocking init
+    chmod 0644 /system/lib64/libfodfix.so
+
+on property:sys.boot_completed=1
+    setprop sys.myfix.bridge.ready 1
+    setprop sys.myfix.bridge.lib "/system/lib64/libfodfix.so"
