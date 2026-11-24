@@ -17,13 +17,29 @@ android {
       .orElse(providers.environmentVariable("ANDROID_HOME"))
       .orElse("/opt/android/sdk")
       .get()
-  val hasNdkAndCmake =
-    file("$androidSdkRoot/ndk").listFiles()?.isNotEmpty() == true &&
-      file("$androidSdkRoot/cmake").listFiles()?.isNotEmpty() == true
+  val installedNdkVersion =
+    file("$androidSdkRoot/ndk")
+      .listFiles()
+      ?.filter { it.isDirectory && file("${it.absolutePath}/source.properties").exists() }
+      ?.sortedByDescending { it.name }
+      ?.firstOrNull()
+      ?.name
+  val installedCmakeVersion =
+    file("$androidSdkRoot/cmake")
+      .listFiles()
+      ?.filter { it.isDirectory && file("${it.absolutePath}/bin/cmake").exists() }
+      ?.sortedByDescending { it.name }
+      ?.firstOrNull()
+      ?.name
+  val hasNdkAndCmake = installedNdkVersion != null && installedCmakeVersion != null
   val enableNativeBuild =
     providers.gradleProperty("MYFIX_NATIVE_BUILD")
       .map { it.toBoolean() }
       .getOrElse(hasNdkAndCmake)
+
+  if (enableNativeBuild && installedNdkVersion != null) {
+    ndkVersion = installedNdkVersion
+  }
 
   defaultConfig {
     applicationId = "com.aistudio.myfix.fodhal"
@@ -86,6 +102,9 @@ android {
     externalNativeBuild {
       cmake {
         path = file("src/main/cpp/CMakeLists.txt")
+        if (installedCmakeVersion != null) {
+          version = installedCmakeVersion
+        }
       }
     }
   }

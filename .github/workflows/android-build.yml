@@ -37,11 +37,21 @@ jobs:
         with:
           gradle-version: '9.3.1'
 
+      - name: Restore debug.keystore for CI signing
+        run: |
+          if [ ! -f debug.keystore ]; then
+            if [ -f debug.keystore.base64 ]; then
+              base64 -d debug.keystore.base64 > debug.keystore
+            else
+              keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+            fi
+          fi
+
       - name: Run unit tests
-        run: gradle testDebugUnitTest -PMYFIX_NATIVE_BUILD=true --no-daemon --stacktrace
+        run: gradle testDebugUnitTest -PMYFIX_NATIVE_BUILD=true --no-daemon --console=plain --stacktrace
 
       - name: Build MYFix Debug APK with native libfodfix (arm64-v8a)
-        run: gradle assembleDebug -PMYFIX_NATIVE_BUILD=true --no-daemon --stacktrace
+        run: gradle assembleDebug -PMYFIX_NATIVE_BUILD=true --no-daemon --console=plain --stacktrace
 
       - name: Package standalone libfodfix GSI bundle
         run: |
