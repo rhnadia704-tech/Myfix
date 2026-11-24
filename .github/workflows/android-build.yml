@@ -24,11 +24,13 @@ jobs:
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
 
-      - name: Install Android NDK and CMake
+      - name: Install Android NDK, CMake and API 36.1 platform
         run: |
-          yes | sdkmanager --licenses >/dev/null || true
-          sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.0.0" "ndk;27.2.12479018" "cmake;3.22.1"
+          yes | sdkmanager --licenses >/dev/null 2>&1 || true
+          sdkmanager --install "platforms;android-36.1" "build-tools;36.0.0" "ndk;27.2.12479018" "cmake;3.22.1"
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -47,13 +49,18 @@ jobs:
           mkdir -p dist/libfodfix-arm64-bundle/selinux
           mkdir -p dist/libfodfix-arm64-bundle/init
 
-          SO_PATH=$(find app/build/intermediates/merged_native_libs/debug -name "libfodfix.so" | grep "arm64-v8a" | head -n 1)
-          if [ -z "$SO_PATH" ]; then
-            echo "ERROR: libfodfix.so (arm64-v8a) was not generated!"
+          APK_PATH=$(find app/build/outputs/apk/debug -name "*.apk" | head -n 1)
+          if [ -z "$APK_PATH" ]; then
+            echo "ERROR: Debug APK not found!"
             exit 1
           fi
 
-          cp -v "$SO_PATH" dist/libfodfix-arm64-bundle/lib64/libfodfix.so
+          unzip -j -o "$APK_PATH" "lib/arm64-v8a/libfodfix.so" -d dist/libfodfix-arm64-bundle/lib64/
+          if [ ! -f dist/libfodfix-arm64-bundle/lib64/libfodfix.so ]; then
+            echo "ERROR: libfodfix.so (arm64-v8a) was not packaged inside $APK_PATH!"
+            exit 1
+          fi
+
           cp -rv app/src/main/assets/myfix/selinux/* dist/libfodfix-arm64-bundle/selinux/
           cp -rv app/src/main/assets/myfix/init/* dist/libfodfix-arm64-bundle/init/
           cp -v app/src/main/assets/myfix/install_gsi.sh dist/libfodfix-arm64-bundle/
